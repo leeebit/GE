@@ -60,7 +60,22 @@ void Slide::createElements(const sf::Vector2f& clickPosition) {
     }
     else if (elementType == IMAGE) {
         newElement = new ImageElement(clickPosition);
-        if (!static_cast<ImageElement*>(newElement)->loadFromFile("apple-cat.jpg")) {
+        const char* filterPatterns[1] = { "*.png;*.jpg;*.jpeg;*.bmp" };
+        const char* imagePath = tinyfd_openFileDialog(
+            "Open Image",
+            "",
+            1,
+            filterPatterns,
+            NULL,
+            0
+        );
+        if (imagePath != NULL) {
+            if (!static_cast<ImageElement*>(newElement)->loadFromFile(imagePath)) {
+                delete newElement;
+                return;
+            }
+        }
+        else {
             delete newElement;
             return;
         }

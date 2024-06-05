@@ -45,22 +45,16 @@ void ImageElement::moveElements(float offsetX, float offsetY) {
 void ImageElement::resizeElements(float amount) {
     sf::Vector2f scale = sprite.getScale();
 
-    if (amount > 0) {
-        scale.x += amount;
-        scale.y += amount;
-    }
-    else if (amount < 0) {
-        float absoluteAmount = std::abs(amount);
-        scale.x -= absoluteAmount;
-        scale.y -= absoluteAmount;
-    }
+    // Make the resizing more gradual by reducing the scaling factor
+    float scaleFactor = 0.05f;
+    float newScaleX = scale.x + amount * scaleFactor;
+    float newScaleY = scale.y + amount * scaleFactor;
 
-    if (scale.x > 1.5f || scale.x < 0.1f) {
-        scale.x = std::max(0.1f, std::min(1.5f, scale.x));
-        scale.y = std::max(0.1f, std::min(1.5f, scale.y));
-    }
+    // Limit the scale to a minimum and maximum value
+    newScaleX = std::max(0.1f, std::min(3.0f, newScaleX));
+    newScaleY = std::max(0.1f, std::min(3.0f, newScaleY));
 
-    sprite.setScale(scale);
+    sprite.setScale(newScaleX, newScaleY);
 
     sf::Vector2f spriteSize(sprite.getGlobalBounds().width, sprite.getGlobalBounds().height);
     sf::Vector2f currentPos = sprite.getPosition();
@@ -77,4 +71,8 @@ void ImageElement::resizeElements(float amount) {
 
 void ImageElement::crop(const sf::IntRect& rect) {
     sprite.setTextureRect(rect);
+}
+
+sf::FloatRect ImageElement::getBounds(){
+    return sprite.getGlobalBounds();
 }

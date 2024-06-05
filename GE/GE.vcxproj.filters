@@ -48,6 +48,9 @@
     <ClCompile Include="Triangle.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="libtinyfiledialogs-master\tinyfiledialogs.c">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h">

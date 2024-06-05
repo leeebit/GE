@@ -4,6 +4,7 @@
 #include "Square.h"
 #include "Triangle.h"
 #include "ImageElement.h"
+#include "libtinyfiledialogs-master/tinyfiledialogs.h"
 #include <SFML/Graphics.hpp>
 #include <iostream>
 #include <vector>

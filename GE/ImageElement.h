@@ -16,5 +16,5 @@ public:
     void moveElements(float offsetX, float offsetY) override;
     void resizeElements(float amount) override;
     void crop(const sf::IntRect& rect);
-
+    sf::FloatRect getBounds();
 };

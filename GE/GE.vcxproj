@@ -24,6 +24,7 @@
     <ClCompile Include="Elements.cpp" />
     <ClCompile Include="GraphicEditor.cpp" />
     <ClCompile Include="ImageElement.cpp" />
+    <ClCompile Include="libtinyfiledialogs-master\tinyfiledialogs.c" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="Presentation.cpp" />
     <ClCompile Include="Slide.cpp" />
