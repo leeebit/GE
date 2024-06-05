@@ -31,6 +31,10 @@ private:
 	bool isCreateElementMenuActive = false;
 	bool isChangeElementPropertiesMenuActive = false;
 	bool isElementTypeChosen = false;
+	bool isCropping = false;
+	bool isSelectingCrop = false;
+	sf::RectangleShape cropArea;
+	sf::Vector2f cropStartPos;
 	ElementType chosenElementType;
 	Elements* selectedElement = nullptr;
 

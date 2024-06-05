@@ -58,6 +58,17 @@ void GraphicEditor::handleMouseClickOnElement(sf::Vector2f mousePosition) {
 	}
 }
 
+sf::Texture cropTexture(const sf::Texture& texture, const sf::IntRect& rect) {
+	sf::Image image = texture.copyToImage();
+	sf::Image croppedImage;
+	croppedImage.create(rect.width, rect.height);
+	croppedImage.copy(image, 0, 0, rect);
+
+	sf::Texture croppedTexture;
+	croppedTexture.loadFromImage(croppedImage);
+	return croppedTexture;
+}
+
 
 void GraphicEditor::App(sf::RenderWindow& window) {
 
@@ -149,6 +160,10 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 	outlineFillButton.setPosition(110, 70);
 	window.draw(outlineFillButton);
 
+	sf::Text CropImageButton("Crop Image", font, 15);
+	CropImageButton.setFillColor(sf::Color::Black);
+	CropImageButton.setPosition(250, 70);
+	window.draw(CropImageButton);
 	//палитра цветов
 	int colorRectSize = 20;
 	int padding = 7;
@@ -258,9 +273,16 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 								isColorFillButtonClicked = true;
 							else if (outlineFillButton.getGlobalBounds().contains(mousePos))
 								isColorOutlinerClicked = true;
+
 							isColorPickerActive = true;
 							isChangeElementPropertiesMenuActive = false;// Открываем меню палитры цветов
+
 						}
+						if (CropImageButton.getGlobalBounds().contains(mousePos)) {
+							std::cout << "Clicked Crop Image!" << std::endl;
+							isCropping = true;
+						}
+						break;
 					}
 
 					else if (deleteSlideText.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
@@ -323,7 +345,6 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 								}
 							}
 						}
-						break;
 					}
 				}
 				else if (event.mouseButton.button == Mouse::Right) {
@@ -341,7 +362,42 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 						}
 					}
 				}
+				/*else if (isCropping) {
+					cropStartPos = window.mapPixelToCoords(mousePos);
+					cropArea.setPosition(cropStartPos);
+					isSelectingCrop = true;
+				}
+			
 				break;
+
+				case Event::MouseButtonReleased:
+					if (event.mouseButton.button == Mouse::Left) {
+						if (isSelectingCrop && isCropping && selectedElement) {
+							sf::Vector2f cropEndPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+							sf::FloatRect cropBounds(cropStartPos, cropEndPos - cropStartPos);
+							cropBounds = cropBounds.intersects(selectedElement->GetBounds()) ? cropBounds : sf::FloatRect();
+
+							if (!cropBounds.width || !cropBounds.height) {
+								std::cout << "Invalid crop area!" << std::endl;
+							}
+							else {
+								sf::Texture newTexture = cropTexture(*selectedElement->getTexture(), sf::IntRect(cropBounds));
+								selectedElement->setTexture(newTexture);
+								std::cout << "Image cropped!" << std::endl;
+							}
+							isSelectingCrop = false;
+							isCropping = false;
+						}
+					}
+					break;*/
+
+				case Event::MouseMoved:
+					if (isSelectingCrop && isCropping) {
+						sf::Vector2f currentMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+						sf::Vector2f cropSize = currentMousePos - cropStartPos;
+						cropArea.setSize(cropSize);
+					}
+					break;
 
 			case Event::KeyPressed:
 				if (event.key.code == Keyboard::A) {
@@ -474,6 +530,10 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 			}
 		}
 
+		if (isSelectingCrop && isCropping) {
+			window.draw(cropArea);
+		}
+
 		if (isCreateElementMenuActive) {
 			window.draw(createElementWindow);
 			window.draw(circleButton);
@@ -486,6 +546,7 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 			window.draw(createElementPropertiesWindow);
 			window.draw(colorFillButton);
 			window.draw(outlineFillButton);
+			window.draw(CropImageButton);
 		}
 		window.display();
 	}
