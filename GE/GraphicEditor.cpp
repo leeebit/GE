@@ -3,10 +3,6 @@
 #include <vector>
 using namespace sf;
 
-GraphicEditor::GraphicEditor() {}
-
-GraphicEditor::~GraphicEditor() {}
-
 void GraphicEditor::CreatePresentation() {
 	Presentation* newPresentation = new Presentation();
 	presentations.push_back(newPresentation);
@@ -17,6 +13,20 @@ void GraphicEditor::CreatePresentation() {
 
 bool GraphicEditor::on_presentation_clicked()
 {
+	//if (presentations.empty())
+	//{
+	//	CreatePresentation();
+	//	std::cout << "Presentation is created!" << std::endl;
+	//	return true;
+	//}
+	//std::cout << "Presentation doesn't created!" << std::endl;
+	return false;
+}
+
+bool GraphicEditor::on_presentation_clicked1()
+{
+	std::cout << this << std::endl;
+	CreatePresentation();
 	if (presentations.empty())
 	{
 		CreatePresentation();
@@ -24,7 +34,7 @@ bool GraphicEditor::on_presentation_clicked()
 		return true;
 	}
 	std::cout << "Presentation doesn't created!" << std::endl;
-	return false;
+	return true;
 }
 
 int GraphicEditor::getCurrentSlideIndex() {
@@ -37,7 +47,13 @@ void GraphicEditor::setCurrentSlideIndex(int a) {
 
 #include "GraphicEditor.h"
 #include <iostream>
-
+void check_for_buttons(std::vector<Button> buttons, const sf::Vector2i mouse)
+{
+	for (auto button : buttons)
+	{
+		if (button.isClicked(mouse)) button.Click();
+	}
+}
 void GraphicEditor::handleMouseClickOnElement(sf::Vector2f mousePosition) {
 	if (!presentations.empty() && currentSlideIndex >= 0) {
 		Presentation* currentPresentation = presentations[presentationCount];
@@ -61,7 +77,8 @@ void GraphicEditor::handleMouseClickOnElement(sf::Vector2f mousePosition) {
 sf::Texture cropTexture(const sf::Texture& texture, const sf::IntRect& rect) {
 	sf::Image image = texture.copyToImage();
 	sf::Image croppedImage;
-	croppedImage.create(rect.width, rect.height);
+
+	croppedImage.create(rect.width, rect.height, sf::Color::Red);
 	croppedImage.copy(image, 0, 0, rect);
 
 	sf::Texture croppedTexture;
@@ -69,6 +86,16 @@ sf::Texture cropTexture(const sf::Texture& texture, const sf::IntRect& rect) {
 	return croppedTexture;
 }
 
+
+GraphicEditor::GraphicEditor()
+{
+}
+
+//GraphicEditor& GraphicEditor::get_instance()
+//{
+//	static GraphicEditor editor;
+//	return editor;
+//}
 
 void GraphicEditor::App(sf::RenderWindow& window) {
 
@@ -80,13 +107,15 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 	if (!font.loadFromFile("DMSerifDisplay-Regular.ttf")) {
 		std::cerr << "Error font load!\n";
 	}
+	std::cout << this << std::endl;
 
-	//std::vector<Button> buttons;
+	std::vector<Button> buttons;
 
 	Text createPresentationText("Create presentation", font, 15);
 	createPresentationText.setFillColor(Color::Black);
 	createPresentationText.setPosition(20, 20);
-	//buttons.push_back(Button((IntRect)createPresentationText.getGlobalBounds(), sf::Color::Black, &on_presentation_clicked));
+	auto kkk1 = &GraphicEditor::on_presentation_clicked1;
+	buttons.push_back(Button((IntRect)createPresentationText.getGlobalBounds(), sf::Color::Black, kkk1, *this));
 
 	Text createSlideText("Create slide", font, 15);
 	createSlideText.setFillColor(Color::Black);
@@ -179,6 +208,8 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 	}
 	bool isColorOutlinerClicked = false;
 	bool isColorFillButtonClicked = false;
+	cropArea.setFillColor(sf::Color::Red);
+
 	while (window.isOpen())
 	{
 		Event event;
@@ -195,17 +226,18 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 					Vector2i mousePos = Mouse::getPosition(window);
 					Vector2f mousePosition = window.mapPixelToCoords(mousePos);
 					std::cout << "Mouse coords: " << mousePos.x << " " << mousePos.y << "\n";
+					check_for_buttons(buttons, mousePos);
 					handleMouseClickOnElement(mousePosition);
-					if (createPresentationText.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
-						std::cout << "Clicked Create Presentation!" << std::endl;
-						// Логика для создания презентации
-						if (presentations.empty()) {
-							CreatePresentation();
-							std::cout << "Presentation is created!" << std::endl;
-						}
-						else std::cout << "Presentation doesn't created!" << std::endl;
-					}
-					else if (createSlideText.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					//if (createPresentationText.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
+					//	std::cout << "Clicked Create Presentation!" << std::endl;
+					//	// Логика для создания презентации
+					//	if (presentations.empty()) {
+					//		CreatePresentation();
+					//		std::cout << "Presentation is created!" << std::endl;
+					//	}
+					//	else std::cout << "Presentation doesn't created!" << std::endl;
+					//}
+					 if (createSlideText.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
 						std::cout << "Clicked Create Slide!" << std::endl;
 						// Логика для создания слайда
 						if (!presentations.empty()) {
@@ -282,7 +314,7 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 							std::cout << "Clicked Crop Image!" << std::endl;
 							isCropping = true;
 						}
-						break;
+					//	break;
 					}
 
 					else if (deleteSlideText.getGlobalBounds().contains(mousePos.x, mousePos.y)) {
@@ -362,34 +394,41 @@ void GraphicEditor::App(sf::RenderWindow& window) {
 						}
 					}
 				}
-				/*else if (isCropping) {
-					cropStartPos = window.mapPixelToCoords(mousePos);
+				if (isCropping && !CropImageButton.getGlobalBounds().contains((Vector2f)Mouse::getPosition(window))) {
+					cropStartPos = window.mapPixelToCoords(Mouse::getPosition(window));
 					cropArea.setPosition(cropStartPos);
 					isSelectingCrop = true;
+					std::cout << "crop selecting" << std::endl;
+					break;
 				}
 			
-				break;
+//				break;
 
 				case Event::MouseButtonReleased:
 					if (event.mouseButton.button == Mouse::Left) {
-						if (isSelectingCrop && isCropping && selectedElement) {
+						if (isSelectingCrop && isCropping && selectedElement && !CropImageButton.getGlobalBounds().contains(Vector2f(event.mouseButton.x, event.mouseButton.y))) {
 							sf::Vector2f cropEndPos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-							sf::FloatRect cropBounds(cropStartPos, cropEndPos - cropStartPos);
-							cropBounds = cropBounds.intersects(selectedElement->GetBounds()) ? cropBounds : sf::FloatRect();
+							std::cout << cropArea.getGlobalBounds().left <<  " " << 
+								cropArea.getGlobalBounds().top << " " << 
+								cropArea.getGlobalBounds().width << " " << 
+								cropArea.getGlobalBounds().height << "\n";
+							sf::FloatRect cropBounds(FloatRect(cropStartPos, cropEndPos - cropStartPos));
+							cropBounds = cropBounds.intersects(selectedElement->getBounds()) ? cropBounds : sf::FloatRect();
 
 							if (!cropBounds.width || !cropBounds.height) {
 								std::cout << "Invalid crop area!" << std::endl;
 							}
 							else {
-								sf::Texture newTexture = cropTexture(*selectedElement->getTexture(), sf::IntRect(cropBounds));
-								selectedElement->setTexture(newTexture);
+								ImageElement* img = dynamic_cast<ImageElement*>(selectedElement);
+								if (img == nullptr) break;
+								img->crop((IntRect)cropArea.getLocalBounds());
 								std::cout << "Image cropped!" << std::endl;
 							}
 							isSelectingCrop = false;
 							isCropping = false;
 						}
 					}
-					break;*/
+					break;
 
 				case Event::MouseMoved:
 					if (isSelectingCrop && isCropping) {

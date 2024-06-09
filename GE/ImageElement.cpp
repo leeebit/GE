@@ -49,12 +49,25 @@ void ImageElement::resizeElements(float amount) {
 }
 
 void ImageElement::crop(const sf::IntRect& rect) {
-    sf::IntRect imageCropRect(rect.left - sprite.getPosition().x, rect.top - sprite.getPosition().y, rect.width, rect.height);
     sf::Texture newTexture;
-    newTexture.loadFromImage(texture.copyToImage(), imageCropRect);
+    newTexture.loadFromImage(texture.copyToImage(), rect);
     texture = newTexture;
     sprite.setTexture(texture);
     sprite.setPosition(sprite.getPosition());
+}
+
+void ImageElement::setTexture(sf::Texture texture)
+{
+    sf::Vector2f oldPos = sprite.getPosition();
+    this->texture = texture;
+
+    sprite.setTexture(texture);
+    sprite.setPosition(oldPos);
+}
+
+sf::Texture ImageElement::getTexture()
+{
+    return texture;
 }
 
 sf::FloatRect ImageElement::getBounds() {

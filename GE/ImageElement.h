@@ -16,5 +16,9 @@ public:
     void moveElements(float offsetX, float offsetY) override;
     void resizeElements(float amount) override;
     void crop(const sf::IntRect& rect);
+    void setTexture(sf::Texture texture);
+    sf::Texture getTexture();
+   
+
     sf::FloatRect getBounds();
 };

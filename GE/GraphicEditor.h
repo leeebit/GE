@@ -7,7 +7,6 @@
 
 class GraphicEditor {
 private:
-
 	std::vector<Presentation*> presentations;
 	int presentationCount;
 	sf::RectangleShape colorRectangles[36];
@@ -39,11 +38,13 @@ private:
 	Elements* selectedElement = nullptr;
 
 public:
+
+	//static GraphicEditor& get_instance();
+	 //void DeletePresentation();
 	GraphicEditor();
-	~GraphicEditor();
-	// void DeletePresentation();
 	void App(sf::RenderWindow& window);
 	bool on_presentation_clicked();
+	bool on_presentation_clicked1();
 	int getCurrentSlideIndex();
 	void setCurrentSlideIndex(int a);
 	void CreatePresentation();
